@@ -289,8 +289,6 @@ class EndScreen(Screen):
         self.ids.notify.text = "To send New Email Press here->"
         self.ids.back.text = "Back"
 
-    pass
-
 
 # Create the screen manager
 sm = ScreenManager()
