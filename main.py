@@ -126,6 +126,7 @@ ScreenManager:
         text: 'Next'
         pos_hint: {'center_x': 0.88, 'center_y': 0.05}
         on_release: root.manager.current = 'subject'
+
 <SubjectScreen>:
     name: 'subject'
     MDLabel:
@@ -198,6 +199,7 @@ ScreenManager:
         id: back
         pos_hint: {'center_x':0.87,'center_y':0.05}
         on_press: root.manager.current = 'menu'
+        
 """
 
 
@@ -231,6 +233,7 @@ class NCScreen(Screen):
         addresses.append(self.ids.address.text.lower().capitalize())
         email_receivers.append([self.ids.name.text.lower().capitalize()])
         new_contact()
+
 
 class SubjectScreen(Screen):
     line_count = 0
