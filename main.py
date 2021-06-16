@@ -14,11 +14,13 @@ email_receivers = []
 addresses = []
 sub = []
 body = []
+new_contacts = []
 
 screen_helper = """
 ScreenManager:
     MenuScreen:
     SelectScreen:
+    NCScreen:
     SubjectScreen:
     BodyScreen:
     EndScreen:
@@ -37,13 +39,14 @@ ScreenManager:
         bold: True
         halign: 'center'
         bold: True
-        font_size: '20sp'
+        font_size: '30sp'
         pos_hint: {'center_x':0.34,'center_y':0.83}
-        color: 0.12, 0.45, 0.41, 1
-    MDRectangleFlatButton:
+        color: 0.16, 0.47, 0.45, 1
+    MDRaisedButton:
         text: 'Start'
-        pos_hint: {'center_x':0.75,'center_y':0.18}
+        pos_hint: {'center_x':0.8,'center_y':0.14}
         on_press: root.manager.current = 'select'
+        elevation: 10
 
 <SelectScreen>:
     name: 'select'
@@ -51,6 +54,16 @@ ScreenManager:
         ScrollView:
             MDList:
                 id: scroll
+    MDLabel:
+        text: 'First select default contacts'
+        bold: True
+        font_size: '17sp'
+        pos_hint: {'center_x': 0.88, 'center_y': 0.954}
+        color: 0.4, 0.4, 0.4, 1
+    MDRaisedButton:
+        text: 'New contact'
+        pos_hint: {'center_x':0.2,'center_y':0.05}
+        on_press: root.manager.current = 'new_contact'
     MDRaisedButton:
         text: 'Speak names to add'
         pos_hint: {'center_x':0.58,'center_y':0.05}
@@ -61,7 +74,58 @@ ScreenManager:
         text: 'Next'
         pos_hint: {'center_x':0.88,'center_y':0.05}
         on_press: root.manager.current = 'subject'
-
+        
+<NCScreen>:
+    name: 'new_contact'
+    MDLabel:
+        id: head
+        text: 'NEW CONTACT'
+        bold: True
+        halign: 'center'
+        bold: True
+        font_size: '20sp'
+        pos_hint: {'center_y':0.7}
+        color: 0, 0, 1, 1
+    MDLabel:
+        id: head
+        text: 'You can add multiple contacts by saving them in pairs'
+        bold: True
+        halign: 'center'
+        bold: True
+        pos_hint: {'center_y':0.6}
+        color: 0.16, 0.47, 0.45, 1
+    MDTextField:
+        id: name
+        hint_text: "Enter name"
+        helper_text: "and Enter Email address"
+        helper_text_mode: "on_focus"
+        icon_right_color: app.theme_cls.primary_color
+        pos_hint:{'center_x': 0.5, 'center_y': 0.5}
+        color_mode: 'custom'
+        mode: "rectangle"
+        line_color_focus: 0, 0, 0.9, 1
+        size_hint_x:None
+        width:500
+    MDTextField:
+        id: address
+        hint_text: "Enter email address"
+        helper_text: "or click on Next"
+        helper_text_mode: "on_focus"
+        icon_right_color: app.theme_cls.primary_color
+        pos_hint:{'center_x': 0.5, 'center_y': 0.4}
+        color_mode: 'custom'
+        mode: "rectangle"
+        line_color_focus: 0, 0, 0.9, 1
+        size_hint_x:None
+        width:500
+    MDRaisedButton:
+        text: 'Save'
+        pos_hint: {'center_x': 0.5, 'center_y': 0.3}
+        on_release: root.save_data()
+    MDRectangleFlatButton:
+        text: 'Next'
+        pos_hint: {'center_x': 0.88, 'center_y': 0.05}
+        on_release: root.manager.current = 'subject'
 <SubjectScreen>:
     name: 'subject'
     MDLabel:
@@ -69,6 +133,7 @@ ScreenManager:
         bold: True
         halign: 'center'
         pos_hint: {'center_x':0.13,'center_y':0.95}
+        color: 0.16, 0.47, 0.45, 1
     MDRectangleFlatButton:
         id: sub
         text: "Press on 'start listening' to speak subject"
@@ -93,6 +158,7 @@ ScreenManager:
         bold: True
         halign: 'center'
         pos_hint: {'center_x':0.18,'center_y':0.95}
+        color: 0.16, 0.47, 0.45, 1
     MDRectangleFlatButton:
         id: ebod
         text: "Press on 'start listening' to speak BODY"
@@ -112,9 +178,10 @@ ScreenManager:
 
 <EndScreen>:
     name: 'end'
-    MDRectangleFlatButton:
+    MDLabel:
         text: "Press on 'Send' button to send composed Email"
-        pos_hint: {'center_x':0.5,'center_y':0.7}
+        pos_hint: {'center_x':0.54,'center_y':0.66}
+        color: 0.16, 0.47, 0.45, 1
     MDRaisedButton:
         text: 'Send'
         pos_hint: {'center_x':0.5,'center_y':0.6}
@@ -123,9 +190,10 @@ ScreenManager:
         id: final
         halign: 'center'
         pos_hint: {'center_x':0.5,'center_y':0.5}
-    MDRectangleFlatButton:
+    MDLabel:
         id: notify
-        pos_hint: {'center_x':0.47,'center_y':0.05}
+        pos_hint: {'center_x':0.57,'center_y':0.05}
+        color: 0.16, 0.47, 0.45, 1
     MDRaisedButton:
         id: back
         pos_hint: {'center_x':0.87,'center_y':0.05}
@@ -155,6 +223,14 @@ class SelectScreen(Screen):
             addresses.append(contact_list[receiver])
         print("Receiver's Email addresses: ", *addresses)
 
+
+class NCScreen(Screen):
+
+    def save_data(self):
+        new_contacts.append([self.ids.name.text.lower(), self.ids.address.text.lower()])
+        addresses.append(self.ids.address.text.lower().capitalize())
+        email_receivers.append([self.ids.name.text.lower().capitalize()])
+        new_contact()
 
 class SubjectScreen(Screen):
     line_count = 0
@@ -217,6 +293,7 @@ class EndScreen(Screen):
 sm = ScreenManager()
 sm.add_widget(MenuScreen(name='menu'))
 sm.add_widget(SelectScreen(name='select'))
+sm.add_widget(NCScreen(name='new_contact'))
 sm.add_widget(SubjectScreen(name='subject'))
 sm.add_widget(BodyScreen(name='body'))
 sm.add_widget(EndScreen(name='end'))
@@ -227,7 +304,7 @@ wb = xl.load_workbook('contacts.xlsx')
 sheet = wb['Sheet1']
 contact_list = {}
 x = 2
-for x in range(2, sheet.max_row):
+for x in range(2, sheet.max_row+1):
     cell1 = sheet.cell(x, 2)
     cell2 = sheet.cell(x, 3)
     contact_list[cell1.value] = cell2.value
@@ -293,17 +370,15 @@ def gather_and_send():
 
 
 def new_contact():
-    talk('type the name and address of new contact!')
-    name = input("Type name of new contact to add: ")
-    email = input("Type Email address of new contact to add: ")
-    contact_list[name] = email
-    new_cell0 = sheet.cell(x + 1, 1)
-    new_cell1 = sheet.cell(x + 1, 2)
-    new_cell2 = sheet.cell(x + 1, 3)
-    new_cell0.value = x - 1
-    new_cell1.value = name
-    new_cell2.value = email
-    wb.save('contacts.xlsx')
+    for name, email in new_contacts:
+        contact_list[name] = email
+        new_cell0 = sheet.cell(x + 1, 1)
+        new_cell1 = sheet.cell(x + 1, 2)
+        new_cell2 = sheet.cell(x + 1, 3)
+        new_cell0.value = x - 1
+        new_cell1.value = name
+        new_cell2.value = email
+        wb.save('contacts.xlsx')
     wb.close()
 
 
